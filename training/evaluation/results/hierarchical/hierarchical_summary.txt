@@ -1,0 +1,12 @@
+HIERARCHICAL EVALUATION SUMMARY
+==================================================
+Classes: ['air', 'toro', 'garnacha', 'monastrel', 'macabeo', 'novell']
+Red wines: ['toro', 'garnacha', 'monastrel']
+White wines: ['macabeo', 'novell']
+--------------------------------------------------
+Level 1 (Air vs Wine):          96.48%
+Level 2 (Red vs White):         91.25%
+Level 3a (Red Region - 3 wines): 89.48%
+Level 3b (White Region - 2 wines): 100.00%
+--------------------------------------------------
+Overall Cascade Accuracy: 88.04%

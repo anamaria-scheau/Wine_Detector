@@ -1,0 +1,14 @@
+Overall Accuracy: 84.95%
+
+              precision    recall  f1-score   support
+
+         air       0.87      0.95      0.90       300
+    garnacha       0.72      0.63      0.67       240
+     macabeo       0.83      0.83      0.83       329
+   monastrel       0.74      0.73      0.74       325
+      novell       0.86      0.94      0.90       250
+        toro       0.98      0.95      0.96       490
+
+    accuracy                           0.85      1934
+   macro avg       0.83      0.84      0.83      1934
+weighted avg       0.85      0.85      0.85      1934
