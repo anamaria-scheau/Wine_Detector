@@ -28,15 +28,17 @@ training/
 │   ├── r_Toro_1.csv                   # 8,800 samples
 │   ├── r_Toro_2.csv                   # 10,800 samples
 │   ├── w_macabeo_1.csv                # 13,160 samples
-│   └── w_novell_1.csv                 # Additional white wine sample
+│   └── w_novell_1.csv                 # 10,000 samples
 │
 ├── models/                            # Output: Trained models (.pkl files)
 │   ├── presence_model.pkl             # Level 1: air vs wine
 │   ├── presence_scaler.pkl            # Scaler for presence model
 │   ├── type_model.pkl                 # Level 2: red vs white
 │   ├── type_scaler.pkl                # Scaler for type model
-│   ├── red_region_model.pkl           # Level 3: toro/garnacha/monastrel
-│   └── red_region_scaler.pkl          # Scaler for red region model
+│   ├── red_region_model.pkl           # Level 3a: toro/garnacha/monastrel
+│   ├── red_region_scaler.pkl          # Scaler for red region model
+│   ├── white_region_model.pkl         # Level 3b: macabeo vs novell
+│   └── white_region_scaler.pkl        # Scaler for white region model
 │
 ├── evaluation/                        # Model evaluation outputs (confusion matrices, reports)
 │
@@ -54,10 +56,11 @@ This folder handles the complete machine learning pipeline for the Wine Detector
 
 1. **Data Conversion** – Converts Bosch `.bmerawdata` files (raw sensor logs from the development kit SD card) into CSV format with labeled samples.
 
-2. **Model Training** – Trains three hierarchical KNN classifiers in a cascade architecture:
+2. **Model Training** – Trains four hierarchical KNN classifiers in a cascade architecture:
    - **Level 1 (Presence)** : Distinguishes between `air` and `wine`
    - **Level 2 (Type)** : Distinguishes between `red` and `white` wine
-   - **Level 3 (Red Region)** : Distinguishes between `toro`, `garnacha`, and `monastrel`
+   - **Level 3a (Red Region)** : Distinguishes between `toro`, `garnacha`, and `monastrel` (3 classes)
+   - **Level 3b (White Region)** : Distinguishes between `macabeo` and `novell` (2 classes)
 
 3. **Model Export** – Saves the trained models and scalers as `.pkl` files for deployment in the `cloud-api/` backend.
 
@@ -98,7 +101,7 @@ The classification is performed in a cascade (hierarchical) structure:
                                        │
                     ┌──────────────────┴──────────────────┐
                     ▼                                      ▼
-              Probă = AIR                           Probă = VIN
+              Sample = AIR                           Sample = WINE
                     │                                      │
                     ▼                                      ▼
            Prediction: "air"                     Level 2: Type
@@ -107,25 +110,26 @@ The classification is performed in a cascade (hierarchical) structure:
                                                        │
                                     ┌──────────────────┴──────────────────┐
                                     ▼                                      ▼
-                              Probă = RED                            Probă = WHITE
+                              Sample = RED                            Sample = WHITE
                                     │                                      │
                                     ▼                                      ▼
-                         Level 3: Red Region                    Prediction: "macabeo"
-                         Model: toro, garnacha, monastrel        (or other white wine)
-                         Features: humidity, gas_resistance
-                                    │
-                                    ▼
-                         Prediction: "toro", "garnacha", or "monastrel"
+                         Level 3a: Red Region                   Level 3b: White Region
+                         Model: toro, garnacha,                  Model: macabeo, novell
+                         monastrel (3 classes)                            (2 classes)
+                                    │                                      │
+                                    ▼                                      ▼
+                         Prediction: "toro",                       Prediction: "macabeo"
+                         "garnacha", or "monastrel"                 or "novell"
 ```
 
 ### Why Hierarchical?
 
 | Benefit | Explanation |
 |---------|-------------|
-| **Simplicity** | Each model deals with only 2-3 classes, not 5+ |
-| **Accuracy** | Specialized models are more accurate than a single multi-class model |
+| **Simplicity** | Each model deals with only 2-3 classes, not 6 |
+| **Accuracy** | Specialized models are more accurate than a single 6‑class model |
 | **Diagnosability** | If a prediction fails, you know exactly which level caused the error |
-| **Extensibility** | Adding a new white wine requires retraining only the white region model |
+| **Extensibility** | Adding a new wine requires retraining only the relevant level |
 
 ---
 
@@ -181,6 +185,7 @@ python train_hierarchical_models.py
 - `presence_model.pkl` + `presence_scaler.pkl`
 - `type_model.pkl` + `type_scaler.pkl`
 - `red_region_model.pkl` + `red_region_scaler.pkl`
+- `white_region_model.pkl` + `white_region_scaler.pkl`
 
 ### Step 4: Deploy Models to API
 
@@ -192,19 +197,19 @@ Then restart the Flask API to load the new models.
 
 ---
 
-## 📊 **Dataset Statistics (Example)**
+## 📊 **Dataset Statistics**
 
-| File | Samples | Label | Class |
-|------|---------|-------|-------|
-| `air_1.csv` | 7,200 | air | Reference |
-| `air_2.csv` | 4,800 | air | Reference |
-| `r_garnacha_1.csv` | 9,600 | garnacha | Red wine |
-| `r_monastrell_1.csv` | 10,000 | monastrel | Red wine |
-| `r_Toro_1.csv` | 8,800 | toro | Red wine |
-| `r_Toro_2.csv` | 10,800 | toro | Red wine |
-| `w_macabeo_1.csv` | 13,160 | macabeo | White wine |
+After pivoting (8 sensors × 3 features each) and discarding incomplete cycles, the final dataset contains **9,668 labelled examples**. The distribution across classes is:
 
-**Total samples:** ~64,360 across 5 classes
+| Class     | Type  | Total samples | Training (80%) | Testing (20%) |
+|-----------|-------|---------------|----------------|----------------|
+| Air       | Ref.  | 1,500         | 1,200          | 300            |
+| Toro      | Red   | 2,450         | 1,960          | 490            |
+| Garnacha  | Red   | 1,200         | 960            | 240            |
+| Monastrel | Red   | 1,624         | 1,299          | 325            |
+| Macabeo   | White | 1,645         | 1,316          | 329            |
+| Novell    | White | 1,249         | 999            | 250            |
+| **Total** |       | **9,668**     | **7,734**      | **1,934**      |
 
 ---
 
@@ -214,9 +219,13 @@ Based on training with the dataset above:
 
 | Model | Classes | Accuracy |
 |-------|---------|----------|
-| **Presence** | air vs wine | ~96% |
-| **Type** | red vs white | ~93% |
-| **Red Region** | toro, garnacha, monastrel | ~91% |
+| **Presence** | air vs wine | 96.5% |
+| **Type** | red vs white | 91.3% |
+| **Red Region** | toro, garnacha, monastrel | 89.5% |
+| **White Region** | macabeo, novell | 100.0% |
+
+**Overall cascade accuracy:** 88.0%  
+**Overall flat accuracy (6 classes):** 84.95%
 
 ---
 
@@ -224,10 +233,10 @@ Based on training with the dataset above:
 
 | Folder | Purpose |
 |--------|---------|
-| `../cloud-api/` | Flask backend that uses these trained models |
+| `../cloud-api/` | Flask backend that uses these trained models (including white region) |
 | `../dashboard/` | Streamlit dashboard for visualization |
 | `../firmware/` | ESP32 code that collects sensor data |
-| `../iot/` | BSEC2 configuration files (alternative approach) |
+| `../iot/` | BSEC2 configuration files (alternative edge AI approach) |
 
 ---
 
@@ -249,6 +258,7 @@ Both approaches are valid and complementary:
 | `KeyError: 'rawDataBody'` | File may be corrupted; check with a JSON validator |
 | `ImportError: No module named sklearn` | Run `pip install -r requirements.txt` |
 | `Models not loading in API` | Verify `.pkl` files were copied to `cloud-api/models/` |
+| `White region model missing` | Ensure `w_novell_1.bmerawdata` is present and `train_hierarchical_models.py` runs completely |
 
 ---
 
