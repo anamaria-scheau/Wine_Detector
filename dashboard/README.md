@@ -27,7 +27,7 @@ This dashboard is the **frontend visualization component** of the Wine Detector 
 2. **Displays hierarchical classification results**:
    - **Level 1 (Presence)**: Air vs Wine
    - **Level 2 (Type)**: Red vs White
-   - **Level 3 (Region)**: Specific wine region (Toro, Garnacha, Monastrel, Macabeo)
+   - **Level 3 (Region)**: Specific wine region (Toro, Garnacha, Monastrel, Macabeo,Novell)
 3. **Shows individual sensor readings** with their specialized functions
 4. **Provides session analysis** with distribution charts and historical data
 5. **Updates in real-time** (every 3 seconds)
