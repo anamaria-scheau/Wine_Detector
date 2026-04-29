@@ -1,7 +1,6 @@
 
 """
 Train hierarchical models for wine detection using ALL 8 sensors.
-Handles NaN values by dropping or filling them.
 Training and saving models.
 """
 
