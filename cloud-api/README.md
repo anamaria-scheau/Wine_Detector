@@ -38,7 +38,7 @@ The backend is the **intelligent core** of the Wine Detector system. It:
    - **Level 1**: Determines if the sample is AIR or WINE
    - **Level 2**: If wine, determines if RED or WHITE
    - **Level 3a**: If red, identifies the region (Toro, Garnacha, Monastrel)
-   - **Level 3b**: If white, identifies the variety (Macabeo, Chardonnay)
+   - **Level 3b**: If white, identifies the variety (Macabeo, Novell)
 4. **Returns predictions** for individual sensors and ensemble statistics
 5. **Stores the latest results** in memory for the dashboard to fetch
 6. **Can be deployed** locally or on PythonAnywhere cloud
