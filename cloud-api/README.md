@@ -117,15 +117,15 @@ The backend is the **intelligent core** of the Wine Detector system. It:
                                        │
                     ┌──────────────────┴──────────────────┐
                     ▼                                      ▼
-              Probă = AIR                           Probă = VIN
+              Sample = AIR                           Sample = VIN
                     │                                      │
                     ▼                                      ▼
-           Publică "air"                         Level 2: Type
+           Publish "air"                          Level 2: Type
                                                   Model: red vs white
                                                        │
                                     ┌──────────────────┴──────────────────┐
                                     ▼                                      ▼
-                              Probă = RED                            Probă = WHITE
+                              Sample = RED                           Sample = WHITE
                                     │                                      │
                                     ▼                                      ▼
                          Level 3: Red Region                    Level 3: White Region
