@@ -6,7 +6,7 @@ This folder contains the complete cloud backend for the Wine Detector system. It
 
 ---
 
-## 📁 **Folder Structure**
+## 📁 Folder Structure
 
 ```
 cloud-api/
@@ -16,7 +16,9 @@ cloud-api/
 │   ├── type_model.pkl           # Level 2: Red vs White
 │   ├── type_scaler.pkl          # StandardScaler for level 2
 │   ├── red_region_model.pkl     # Level 3a: Red Region (toro/garnacha/monastrel)
-│   └── red_region_scaler.pkl    # StandardScaler for level 3a
+│   ├── red_region_scaler.pkl    # StandardScaler for level 3a
+│   ├── white_region_model.pkl   # Level 3b: White Region (macabeo/novell)
+│   └── white_region_scaler.pkl  # StandardScaler for level 3b
 │
 ├── app.py                       # Main Flask application
 ├── mqtt_subscriber.py           # MQTT client for ThingsBoard
@@ -28,7 +30,7 @@ cloud-api/
 
 ---
 
-## 🚀 **What This Backend Does**
+## 🚀 What This Backend Does
 
 The backend is the **intelligent core** of the Wine Detector system. It:
 
@@ -37,15 +39,15 @@ The backend is the **intelligent core** of the Wine Detector system. It:
 3. **Performs hierarchical classification**:
    - **Level 1**: Determines if the sample is AIR or WINE
    - **Level 2**: If wine, determines if RED or WHITE
-   - **Level 3a**: If red, identifies the region (Toro, Garnacha, Monastrel)
-   - **Level 3b**: If white, identifies the variety (Macabeo, Novell)
+   - **Level 3a**: If red, identifies the region (Toro, Garnacha, Monastrel) – 3 classes
+   - **Level 3b**: If white, identifies the variety (Macabeo, Novell) – 2 classes
 4. **Returns predictions** for individual sensors and ensemble statistics
 5. **Stores the latest results** in memory for the dashboard to fetch
 6. **Can be deployed** locally or on PythonAnywhere cloud
 
 ---
 
-## 📡 **API Endpoints**
+## 📡 API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -58,9 +60,9 @@ The backend is the **intelligent core** of the Wine Detector system. It:
 
 ---
 
-## 📤 **API Request/Response Examples**
+## 📤 API Request/Response Examples
 
-### **POST `/predict_8sensors`**
+### POST `/predict_8sensors`
 
 **Request:**
 ```json
@@ -107,7 +109,7 @@ The backend is the **intelligent core** of the Wine Detector system. It:
 
 ---
 
-## 🧠 **How the Hierarchical Models Work**
+## 🧠 How the Hierarchical Models Work
 
 ```
                     ┌─────────────────────────────────────────┐
@@ -129,20 +131,22 @@ The backend is the **intelligent core** of the Wine Detector system. It:
                                     │                                      │
                                     ▼                                      ▼
                          Level 3: Red Region                    Level 3: White Region
-                         Model: toro, garnacha,                  Class: macabeo, novell
+                         Model: toro, garnacha,                  Model: macabeo, novell
                          monastrel (3 classes)                            (2 classes)
 ```
 
-**Why hierarchical?**
-- Simpler models (2-3 classes each) → higher accuracy
-- Easier to diagnose errors (you know exactly which level failed)
-- Easier to extend (add new white wines without retraining everything)
+### Why hierarchical?
+
+- **Simpler models** (2–3 classes each) → higher accuracy
+- **Easier to diagnose errors** (you know exactly which level failed)
+- **Easier to extend** (add new wines without retraining everything)
 
 ---
 
-## 🔧 **Dependencies**
+## 🔧 Dependencies
 
 Install with:
+
 ```bash
 pip install -r api_requirements.txt
 ```
@@ -161,22 +165,22 @@ requests==2.31.0
 
 ---
 
-## 🏃 **How to Run Locally**
+## 🏃 How to Run Locally
 
-### **1. Start the Flask API**
+### 1. Start the Flask API
 ```bash
 cd cloud-api
 python app.py
 ```
 API runs on `http://localhost:5000`
 
-### **2. Start the MQTT Subscriber** (in another terminal)
+### 2. Start the MQTT Subscriber (in another terminal)
 ```bash
 cd cloud-api
 python mqtt_subscriber.py
 ```
 
-### **3. Test the API**
+### 3. Test the API
 ```bash
 curl http://localhost:5000/health
 curl http://localhost:5000/info
@@ -184,21 +188,18 @@ curl http://localhost:5000/info
 
 ---
 
-## ☁️ **Deploy to PythonAnywhere**
+## ☁️ Deploy to PythonAnywhere
 
-### **1. Upload files** to `/home/yourusername/mysite/`
-
-### **2. Configure WSGI** (`wine_detector_wsgi.py`)
-```python
-PROJECT_PATH = '/home/yourusername/mysite'
-```
-
-### **3. Install dependencies** in PythonAnywhere console
-```bash
-pip install --user -r api_requirements.txt
-```
-
-### **4. Reload the web app** from the PythonAnywhere dashboard
+1. **Upload files** to `/home/yourusername/mysite/`
+2. **Configure WSGI** (`wine_detector_wsgi.py`):
+   ```python
+   PROJECT_PATH = '/home/yourusername/mysite'
+   ```
+3. **Install dependencies** in PythonAnywhere console:
+   ```bash
+   pip install --user -r api_requirements.txt
+   ```
+4. **Reload the web app** from the PythonAnywhere dashboard
 
 Your API will be available at:
 ```
@@ -207,14 +208,14 @@ https://yourusername.pythonanywhere.com
 
 ---
 
-## 🧪 **Testing**
+## 🧪 Testing
 
-### **Health Check**
+### Health Check
 ```bash
 curl https://yourusername.pythonanywhere.com/health
 ```
 
-### **Test Prediction**
+### Test Prediction
 ```bash
 curl -X POST https://yourusername.pythonanywhere.com/predict_8sensors \
   -H "Content-Type: application/json" \
@@ -223,21 +224,21 @@ curl -X POST https://yourusername.pythonanywhere.com/predict_8sensors \
 
 ---
 
-## 🔐 **Features**
+## 🔐 Features
 
 | Feature | Description |
 |---------|-------------|
 | **Hierarchical classification** | 4-level decision tree for wine identification |
 | **Multi-sensor support** | Processes up to 8 sensors simultaneously |
-| **Ensemble voting** | Combines predictions from all sensors for final decision |
+| **Ensemble voting** | Combines predictions from all sensors |
 | **In-memory storage** | Caches latest results for dashboard polling |
 | **CORS enabled** | Allows dashboard (different port) to communicate |
 | **Production ready** | WSGI configuration for PythonAnywhere |
-| **Extensible** | Easy to add new wine varieties (just update lists) |
+| **Extensible** | Easy to add new wine varieties |
 
 ---
 
-## 📊 **Model Information**
+## 📊 Model Information
 
 The backend loads the following models (must be present in `models/` folder):
 
@@ -246,52 +247,43 @@ The backend loads the following models (must be present in `models/` folder):
 | `presence_model.pkl` | Air vs Wine | air, wine |
 | `type_model.pkl` | Red vs White | red, white |
 | `red_region_model.pkl` | Red Wine Region | toro, garnacha, monastrel |
+| `white_region_model.pkl` | White Wine Region | macabeo, novell |
 
-White wine region is handled by a simple rule (singleton class), no model needed.
+All models are KNN classifiers (K=17) trained on `humidity` and `gas_resistance` features using a standard scaler.
 
 ---
 
-## 🐛 **Troubleshooting**
+## 🐛 Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| Models not loading | Ensure `.pkl` files exist in `models/` folder |
-| CORS errors | `CORS(app)` is already enabled |
-| MQTT connection fails | Check ThingsBoard token and host |
-| API returns 503 | Models not loaded; check logs |
+| **Models not loading** | Ensure `.pkl` files exist in `models/` folder |
+| **CORS errors** | `CORS(app)` is already enabled |
+| **MQTT connection fails** | Check ThingsBoard token and host |
+| **API returns 503** | Models not loaded; check logs |
+| **White wines not distinguished** | Verify `white_region_model.pkl` exists and was trained with both classes |
 
 ---
 
-## 📚 **Related Folders**
+## 📚 Related Folders
 
 | Folder | Purpose |
 |--------|---------|
 | `../dashboard/` | Streamlit dashboard that consumes this API |
 | `../firmware/` | ESP32 code that sends raw sensor data via MQTT |
-| `../training/` | Scripts for training the KNN models |
+| `../training/` | Scripts for training the KNN models (including white region) |
 
 ---
 
-## 👥 **Contributing**
+## 👥 Contributing
 
-To add a new white wine:
-1. Add the wine name to `WHITE_WINES` list
-2. Collect training data for the new wine
-3. Retrain the white region model (or keep singleton rule if only one)
-4. Update the API (no code changes needed for the hierarchical logic)
+To add a new wine variety:
+
+1. For a **new red wine**: add to `RED_WINES` list, collect data, retrain `red_region_model`
+2. For a **new white wine**: add to `WHITE_WINES` list, collect data, retrain `white_region_model`
+3. Update the API (no code changes needed for the hierarchical logic)
 
 ---
 
 **Created for the Wine Detector Project**  
 *Last updated: April 2026*
-
-
-
-
-
-
-
-
-
-
-
