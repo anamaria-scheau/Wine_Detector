@@ -117,7 +117,7 @@ The backend is the **intelligent core** of the Wine Detector system. It:
                                        │
                     ┌──────────────────┴──────────────────┐
                     ▼                                      ▼
-              Sample = AIR                           Sample = VIN
+              Sample = AIR                           Sample = WINE
                     │                                      │
                     ▼                                      ▼
            Publish "air"                          Level 2: Type
