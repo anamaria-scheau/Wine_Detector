@@ -2,7 +2,7 @@
 """
 Train hierarchical models for wine detection using ALL 8 sensors.
 Handles NaN values by dropping or filling them.
-No evaluation output - only training and saving models.
+Training and saving models.
 """
 
 import pandas as pd
