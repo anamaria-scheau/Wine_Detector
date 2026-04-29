@@ -129,8 +129,8 @@ The backend is the **intelligent core** of the Wine Detector system. It:
                                     │                                      │
                                     ▼                                      ▼
                          Level 3: Red Region                    Level 3: White Region
-                         Model: toro, garnacha,                  Class: macabeo (single)
-                         monastrel (3 clase)
+                         Model: toro, garnacha,                  Class: macabeo, novell
+                         monastrel (3 classes)                            (2 classes)
 ```
 
 **Why hierarchical?**
