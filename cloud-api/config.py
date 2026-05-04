@@ -1,26 +1,31 @@
+## Configuration
+
+Create a `config.py` file in the `cloud-api/` directory with the following structure. Replace the placeholder values with your own credentials.
+
+```python
 """
-Configurație unificată pentru Wine Detector Backend
+Unified configuration for Wine Detector Backend
 """
 
 # ============================================
-# PythonAnywhere (pentru deploy și WSGI)
+# PythonAnywhere (for deployment and WSGI)
 # ============================================
-PYANYWHERE_USERNAME = "WineDetector"
-PYANYWHERE_DOMAIN = "WineDetector.pythonanywhere.com"
-API_TOKEN = "dbae51c141ef4c315a7db915876fb372720e89a0"
+PYANYWHERE_USERNAME = "your_username"
+PYANYWHERE_DOMAIN = "your_username.pythonanywhere.com"
+API_TOKEN = "your_api_token_here"
 
-# Căi pe server (nu trebuie schimbate)
-WEBAPP_PATH = f"/home/WineDetector/mysite"
-WSGI_FILE = f"/var/www/WineDetector_pythonanywhere_com_wsgi.py"
-VENV_PATH = f"/home/WineDetector/.virtualenvs/my_venv"
+# Server paths (do not change)
+WEBAPP_PATH = f"/home/{PYANYWHERE_USERNAME}/mysite"
+WSGI_FILE = f"/var/www/{PYANYWHERE_USERNAME}_pythonanywhere_com_wsgi.py"
+VENV_PATH = f"/home/{PYANYWHERE_USERNAME}/.virtualenvs/my_venv"
 
 # ============================================
-# ThingsBoard (pentru subscriber)
+# ThingsBoard (for MQTT subscriber)
 # ============================================
 THINGSBOARD_HOST = "thingsboard.cloud"
 THINGSBOARD_PORT = 1883
-THINGSBOARD_ACCESS_TOKEN = "dXF4HlErrhymJFnV6YQf"
-THINGSBOARD_MQTT_TOPIC = "v1/devices/me/telemetry"  # Standard, nu schimba!
+THINGSBOARD_ACCESS_TOKEN = "your_device_access_token"
+THINGSBOARD_MQTT_TOPIC = "v1/devices/me/telemetry"   # Standard, do not change
 
 # ============================================
 # Flask API
@@ -30,11 +35,11 @@ FLASK_VARIABLE = "app"
 API_PORT = 5000
 API_HOST = "0.0.0.0"
 
-# Modele
+# Models
 MODELS_DIR = "models"
 FEATURES = ["humidity", "gas_resistance"]
 RED_WINES = ["toro", "garnacha", "monastrel"]
 WHITE_WINES = ["macabeo", "chardonnay"]
 
-# Endpoint-uri
+# Endpoints
 PREDICT_ENDPOINT = "/predict_8sensors"
