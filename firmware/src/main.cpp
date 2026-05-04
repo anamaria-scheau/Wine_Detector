@@ -11,18 +11,19 @@
 #include <bsec2.h>
 #include "bsec_config.h"
 
+
 // ============================================
 // WiFi Configuration
 // ============================================
-const char* ssid = "en XC";
-const char* password = "necesitamosfinanciacion";
+const char* ssid = "your_wifi_ssid";
+const char* password = "your_wifi_password";
 
 // ============================================
 // MQTT Configuration - THINGSBOARD
 // ============================================
 const char* mqtt_broker = "thingsboard.cloud";
 const int mqtt_port = 1883;
-const char* tb_access_token = "dXF4HlErrhymJFnV6YQf";  // Token-ul tău
+const char* tb_access_token = "your_device_access_token";
 const char* mqtt_topic = "v1/devices/me/telemetry";
 const char* mqtt_client_id = "ESP32-WineDetector";
 
