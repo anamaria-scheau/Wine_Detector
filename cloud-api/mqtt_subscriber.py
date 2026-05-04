@@ -1,6 +1,6 @@
 """
 MQTT Subscriber for Wine Detector - ThingsBoard
-Ascultă datele de la ThingsBoard și le trimite la Flask API
+Listens to data from ThingsBoard and sends it to Flask API
 """
 
 import paho.mqtt.client as mqtt
@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 # ============================================
 THINGSBOARD_HOST = "thingsboard.cloud"
 THINGSBOARD_PORT = 1883
-THINGSBOARD_ACCESS_TOKEN = "dXF4HlErrhymJFnV6YQf"  # Token-ul tău
+THINGSBOARD_ACCESS_TOKEN = "your_token"  
 MQTT_TOPIC = "v1/devices/me/telemetry"
 
 # API URL 
 API_URL = "http://WineDetector.pythonanywhere.com/predict_8sensors"
-#API_URL = "http://localhost:5000/predict_8sensors"  #  test local
+#API_URL = "http://localhost:5000/predict_8sensors"  #  local test
 
 # ============================================
 # Callbacks
